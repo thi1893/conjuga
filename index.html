@@ -318,6 +318,27 @@
 
   .hidden{display:none!important;}
 
+  /* ---------- Snippet de teoria no erro ---------- */
+  .fb-snippet{margin-top:11px;background:rgba(225,75,90,.08);border:1.5px solid rgba(225,75,90,.2);border-radius:12px;padding:10px 12px;}
+  .snip-rule{font-weight:800;font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--rose);margin-bottom:7px;}
+  .snip-conj{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 10px;}
+  .snip-conj span{font-weight:700;font-size:.87rem;color:var(--ink);}
+  .snip-conj i{font-style:normal;font-size:.68rem;color:var(--ink-soft);display:block;font-weight:600;}
+  .snip-ger{font-weight:700;font-size:.92rem;color:var(--ink);}
+  .snip-ger b{color:var(--rose);}
+
+  /* ---------- Scoreboard ---------- */
+  .sb-row{display:flex;align-items:center;gap:12px;background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:11px 14px;margin-bottom:8px;}
+  .sb-rank{flex:none;font-family:"Fraunces",serif;font-weight:900;font-size:1.25rem;width:30px;text-align:center;color:var(--ink-soft);}
+  .sb-rank.gold{color:#D4A017;}
+  .sb-rank.silver{color:#9E9E9E;}
+  .sb-rank.bronze{color:#A0522D;}
+  .sb-info{flex:1;min-width:0;}
+  .sb-name{font-weight:800;font-size:.97rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sb-meta{font-size:.74rem;color:var(--ink-soft);font-weight:600;margin-top:2px;}
+  .sb-pct{flex:none;font-family:"Fraunces",serif;font-weight:900;font-size:1.5rem;color:var(--teal-dk);}
+  .sb-empty{text-align:center;padding:36px 0;color:var(--ink-soft);font-weight:600;font-size:.95rem;}
+
   /* confetti */
   .confetti{position:absolute;top:0;width:11px;height:18px;z-index:40;pointer-events:none;border-radius:2px;}
 
@@ -385,6 +406,7 @@
 
     <button class="btn terra" id="startBtn">Empezar</button>
     <button class="btn ghost" id="theoryBtn" style="margin-top:10px">📖 Estudiar la teoría</button>
+    <button class="btn ghost" id="scoreBoardBtn" style="margin-top:10px">🏆 Ver placar</button>
     <p class="src">Fonte: planilha <b>ESPAÑOL THIAGO</b> (Google Drive) — abas de gerundio e pasado simple. Verbos regulares (AR/ER/IR), irregulares (tener, ir, decir, hacer, poner…) e casos especiais (doble vocal → -yendo, e→i, o→u).</p>
   </section>
 
@@ -439,6 +461,7 @@
     <div class="controls">
       <button class="btn terra" id="againBtn">Jugar de nuevo</button>
       <button class="btn ghost" id="theoryBtn2">📖 Repasar la teoría</button>
+      <button class="btn ghost" id="scoreBoardBtn2">🏆 Ver placar</button>
       <button class="btn ghost" id="menuBtn">Volver al menú</button>
     </div>
   </section>
@@ -699,6 +722,17 @@
     </div>
   </section>
 
+  <!-- SCOREBOARD -->
+  <section id="scoreboard" class="theory hidden">
+    <div class="th-head">
+      <button class="th-back" id="sbBack" aria-label="Volver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h1>🏆 Placar</h1>
+    </div>
+    <p class="th-intro">Melhores resultados por jogador (acerto %). Cada rodada concluída é salva.</p>
+    <div id="sbList"></div>
+    <button class="btn ghost" id="sbClear" style="margin-top:8px;font-size:.85rem;">🗑 Apagar histórico</button>
+  </section>
+
   <p class="footer-note">Hecho con tus verbos · presente · indefinido · gerundio</p>
   </div><!-- /content -->
 
@@ -708,6 +742,7 @@
       <div class="fb-icon" id="fbIcon">✓</div>
       <div class="fb-text"><b id="fbTitle">¡Correcto!</b><span id="fbDetail"></span></div>
     </div>
+    <div id="fbSnippet" class="fb-snippet hidden"></div>
     <button class="btn" id="contBtn">Continuar</button>
   </div>
 
@@ -910,6 +945,82 @@ document.getElementById("nameField").addEventListener("input", function(){
   updateGreeting();
 });
 
+/* ============ SCOREBOARD ============ */
+const SCORES_KEY = "conjuga_scores";
+function getScores(){ return JSON.parse(localStorage.getItem(SCORES_KEY)||"[]"); }
+function saveScore(entry){
+  const all = getScores();
+  all.push(entry);
+  localStorage.setItem(SCORES_KEY, JSON.stringify(all.slice(-200)));
+}
+function bestPerName(scores){
+  const map = {};
+  scores.forEach(s=>{
+    const n = s.name||"Anônimo";
+    if(!map[n] || s.pct > map[n].pct || (s.pct===map[n].pct && s.xp>map[n].xp)) map[n]=s;
+  });
+  return Object.values(map).sort((a,b)=>b.pct-a.pct||b.xp-a.xp);
+}
+
+function renderScoreboard(){
+  const rows = bestPerName(getScores());
+  const el = $("#sbList");
+  if(!rows.length){ el.innerHTML='<div class="sb-empty">Nenhuma rodada concluída ainda.<br>Jogue uma partida para aparecer aqui!</div>'; return; }
+  const medals = ["🥇","🥈","🥉"];
+  el.innerHTML = rows.slice(0,20).map((r,i)=>{
+    const rankClass = i===0?"gold":i===1?"silver":i===2?"bronze":"";
+    const rankText = medals[i]||(i+1)+"º";
+    const tenseLabel = {pres:"Presente",indef:"Indefinido",ger:"Gerundio",mix:"Misto"}[r.tense]||"";
+    return `<div class="sb-row">
+      <div class="sb-rank ${rankClass}">${rankText}</div>
+      <div class="sb-info">
+        <div class="sb-name">${r.name||"Anônimo"}</div>
+        <div class="sb-meta">${r.date} · ${r.correct}/${r.total} · ${tenseLabel}</div>
+      </div>
+      <div class="sb-pct">${r.pct}%</div>
+    </div>`;
+  }).join("");
+}
+
+let sbFrom = "start";
+function openScoreboard(from){
+  sbFrom = from;
+  ["start","end","game","theory"].forEach(id=>$("#"+id).classList.add("hidden"));
+  $("#scoreboard").classList.remove("hidden");
+  renderScoreboard();
+  $(".content").scrollTop=0;
+}
+function closeScoreboard(){
+  $("#scoreboard").classList.add("hidden");
+  $("#"+sbFrom).classList.remove("hidden");
+  $(".content").scrollTop=0;
+}
+
+/* ============ THEORY SNIPPET ============ */
+function getTheorySnippet(it){
+  if(it.kind==="ger"){
+    const ruleMap = {
+      "-AR → -ando":         {label:"-AR → ando",   ex:"cant<b>ando</b>"},
+      "-ER/-IR → -iendo":    {label:"-ER/-IR → iendo", ex:"com<b>iendo</b> · viv<b>iendo</b>"},
+      "Cambio e→i":          {label:"Cambio e→i na raíz", ex:"pedir → pid<b>iendo</b>"},
+      "Cambio o→u":          {label:"Cambio o→u na raíz", ex:"dormir → durm<b>iendo</b>"},
+      "Vocal + vocal → -yendo":{label:"Doble vocal → yendo", ex:"leer → le<b>yendo</b>"}
+    };
+    const r = ruleMap[it.rule]||{label:it.rule, ex:it.verb+" → <b>"+it.ans+"</b>"};
+    return `<div class="snip-rule">${r.label}</div><div class="snip-ger">${it.verb} → <b>${it.ans}</b> &nbsp;·&nbsp; ${r.ex}</div>`;
+  }
+  // Para presente e indefinido: mostra conjugação completa do verbo
+  const src = it.kind==="pres" ? PRES : INDEF;
+  const v = src.find(x=>x.inf===it.verb);
+  if(!v) return `<div class="snip-rule">${it.rule}</div><div class="snip-ger">→ <b>${it.ans}</b></div>`;
+  const c = v.c;
+  return `<div class="snip-rule">${it.rule} · ${it.verb}</div>
+    <div class="snip-conj">
+      <span><i>yo</i>${c.yo}</span><span><i>tú</i>${c.tu}</span><span><i>él/ella</i>${c.el}</span>
+      <span><i>nosotros</i>${c.nos}</span><span><i>vosotros</i>${c.vos}</span><span><i>ellos</i>${c.ellos}</span>
+    </div>`;
+}
+
 /* ============ HELPERS ============ */
 const $=s=>document.querySelector(s);
 const norm = s => s.toLowerCase().trim().replace(/\s+/g,' ');
@@ -962,9 +1073,7 @@ function goToMenu(){
   $("#feedback").className="feedback";
   $("#quitSheet").classList.remove("show");
   $("#quitBtn").classList.add("hidden");
-  $("#end").classList.add("hidden");
-  $("#game").classList.add("hidden");
-  $("#theory").classList.add("hidden");
+  ["end","game","theory","scoreboard"].forEach(id=>$("#"+id).classList.add("hidden"));
   $("#start").classList.remove("hidden");
   $(".content").scrollTop=0;
   resetStats();
@@ -1006,6 +1115,12 @@ function switchTheoryTab(tab){
 function tenseTab(t){ return t==="ger"?"ger": t==="pres"?"pres":"indef"; }
 $("#theoryBtn").addEventListener("click",()=>openTheory("start", tenseTab(cfg.tense)));
 $("#theoryBtn2").addEventListener("click",()=>openTheory("end", tenseTab(cfg.tense)));
+$("#scoreBoardBtn").addEventListener("click",()=>openScoreboard("start"));
+$("#scoreBoardBtn2").addEventListener("click",()=>openScoreboard("end"));
+$("#sbBack").addEventListener("click",closeScoreboard);
+$("#sbClear").addEventListener("click",()=>{
+  if(confirm("Apagar todo o histórico de partidas?")){ localStorage.removeItem(SCORES_KEY); renderScoreboard(); }
+});
 $("#thBack").addEventListener("click",closeTheory);
 document.querySelectorAll(".tab-btn").forEach(b=>b.addEventListener("click",()=>switchTheoryTab(b.dataset.tab)));
 
@@ -1201,15 +1316,18 @@ function bad(it,val,noLife){
   missed.push(it);
   const detail = "Respuesta: <em>"+it.ans+"</em>" + (it.kind==="ger"? "  ("+it.verb+")" : "  ("+it.pron.label+" · "+it.verb+")");
   $("#card").classList.add("shake"); setTimeout(()=>$("#card").classList.remove("shake"),420);
-  showFB(false, val? "No exactamente":"A repasar", detail);
+  showFB(false, val? "No exactamente":"A repasar", detail, getTheorySnippet(it));
 }
 
-function showFB(ok,title,detail){
+function showFB(ok,title,detail,snippet){
   const fb=$("#feedback");
   fb.className="feedback show "+(ok?"ok":"no");
   $("#fbIcon").textContent= ok?"✓":"✕";
   $("#fbTitle").textContent=title;
   $("#fbDetail").innerHTML=detail||"";
+  const snip=$("#fbSnippet");
+  if(!ok && snippet){ snip.innerHTML=snippet; snip.classList.remove("hidden"); }
+  else { snip.classList.add("hidden"); }
   const cont=$("#contBtn");
   cont.className = "btn"+(ok?"":" terra");
   cont.onclick=nextCard;
@@ -1233,6 +1351,17 @@ function endGame(){
   $("#sStreak").textContent=bestStreak;
   $("#sXp").textContent=xp;
   const out=$("#end");
+  // salva no placar
+  saveScore({
+    name: playerName||"Anônimo",
+    pct: acc,
+    xp,
+    correct,
+    total: Math.min(idx, deck.length),
+    date: new Date().toLocaleDateString("pt-BR"),
+    tense: cfg.tense
+  });
+
   const nome = playerName || "você";
   if(hearts<=0){
     $("#endEmoji").textContent="💔";
