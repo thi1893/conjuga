@@ -732,7 +732,11 @@
       <button class="th-back" id="sbBack" aria-label="Volver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
       <h1>🏆 Placar</h1>
     </div>
-    <p class="th-intro">Melhores resultados por jogador (acerto %). Cada rodada concluída é salva.</p>
+    <p class="th-intro">Melhores resultados por jogador (acerto %). Flashcards não contam.</p>
+    <div class="tabs">
+      <button class="tab-btn" data-sbmode="type" aria-pressed="true">✍️ Escrever</button>
+      <button class="tab-btn" data-sbmode="choice" aria-pressed="false">🔤 Múltipla escolha</button>
+    </div>
     <div id="sbList"></div>
     <button class="btn ghost" id="sbClear" style="margin-top:8px;font-size:.85rem;">🗑 Apagar histórico</button>
   </section>
@@ -1022,16 +1026,19 @@ function buildScoreHTML(rows){
   }).join("");
 }
 
+let sbMode = "type";
+
 async function renderScoreboard(){
   const el = $("#sbList");
   el.innerHTML = '<div class="sb-empty">Carregando placar…</div>';
   try {
     const snap = await db.collection("scores").get();
-    const scores = snap.docs.map(d=>d.data());
-    el.innerHTML = buildScoreHTML(bestPerName(scores));
+    const all = snap.docs.map(d=>d.data());
+    const filtered = all.filter(s=>(s.mode||"type")===sbMode);
+    el.innerHTML = buildScoreHTML(bestPerName(filtered));
   } catch(e){
-    // fallback para localStorage se offline
-    el.innerHTML = buildScoreHTML(bestPerName(getLocalScores()));
+    const filtered = getLocalScores().filter(s=>(s.mode||"type")===sbMode);
+    el.innerHTML = buildScoreHTML(bestPerName(filtered));
   }
 }
 
@@ -1173,6 +1180,14 @@ $("#scoreBoardBtn2").addEventListener("click",()=>openScoreboard("end"));
 $("#sbBack").addEventListener("click",closeScoreboard);
 $("#sbClear").addEventListener("click",()=>{
   if(confirm("Apagar todo o histórico de partidas?")){ localStorage.removeItem(SCORES_KEY); renderScoreboard(); }
+});
+document.querySelectorAll("[data-sbmode]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll("[data-sbmode]").forEach(b=>b.setAttribute("aria-pressed","false"));
+    btn.setAttribute("aria-pressed","true");
+    sbMode = btn.dataset.sbmode;
+    renderScoreboard();
+  });
 });
 $("#thBack").addEventListener("click",closeTheory);
 document.querySelectorAll(".tab-btn").forEach(b=>b.addEventListener("click",()=>switchTheoryTab(b.dataset.tab)));
@@ -1404,16 +1419,19 @@ function endGame(){
   $("#sStreak").textContent=bestStreak;
   $("#sXp").textContent=xp;
   const out=$("#end");
-  // salva no placar
-  saveScore({
-    name: playerName||"Anônimo",
-    pct: acc,
-    xp,
-    correct,
-    total: Math.min(idx, deck.length),
-    date: new Date().toLocaleDateString("pt-BR"),
-    tense: cfg.tense
-  });
+  // salva no placar (flashcards não contam)
+  if(cfg.mode !== "flip"){
+    saveScore({
+      name: playerName||"Anônimo",
+      pct: acc,
+      xp,
+      correct,
+      total: Math.min(idx, deck.length),
+      date: new Date().toLocaleDateString("pt-BR"),
+      tense: cfg.tense,
+      mode: cfg.mode
+    });
+  }
 
   const nome = playerName || "você";
   if(hearts<=0){
