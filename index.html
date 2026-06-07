@@ -374,6 +374,10 @@
     <div class="opt-group">
       <h3>Seu nome</h3>
       <input class="name-field" id="nameField" type="text" autocomplete="given-name" autocapitalize="words" placeholder="Como você se chama?">
+      <div class="row2" style="margin-top:8px;">
+        <button class="btn ghost" id="clearNameBtn">✕ Limpar</button>
+        <button class="btn terra" id="saveNameBtn">Salvar nome</button>
+      </div>
     </div>
 
     <div class="opt-group">
@@ -946,15 +950,32 @@ let playerName = localStorage.getItem("conjuga_name") || "";
   updateGreeting();
 })();
 
-function updateGreeting(){
+function updateGreeting(preview){
   const t = document.getElementById("startTitle");
   if(!t) return;
-  t.textContent = playerName ? "¡Hola, " + playerName + "!" : "¡Vamos a conjugar!";
+  const n = preview !== undefined ? preview : playerName;
+  t.textContent = n ? "¡Hola, " + n + "!" : "¡Vamos a conjugar!";
 }
 
 document.getElementById("nameField").addEventListener("input", function(){
-  playerName = this.value.trim();
+  updateGreeting(this.value.trim());
+});
+
+document.getElementById("saveNameBtn").addEventListener("click", function(){
+  const val = document.getElementById("nameField").value.trim();
+  playerName = val;
   localStorage.setItem("conjuga_name", playerName);
+  updateGreeting();
+  const btn = this;
+  btn.textContent = "✓ Salvo!";
+  btn.disabled = true;
+  setTimeout(()=>{ btn.textContent = "Salvar nome"; btn.disabled = false; }, 1800);
+});
+
+document.getElementById("clearNameBtn").addEventListener("click", function(){
+  playerName = "";
+  localStorage.removeItem("conjuga_name");
+  document.getElementById("nameField").value = "";
   updateGreeting();
 });
 
