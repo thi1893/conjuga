@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Conjuga">
-<meta name="theme-color" content="#E8642F">
+<meta name="theme-color" content="#7C3AED">
 <title>Conjuga · Conjugação em Espanhol</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -19,14 +19,14 @@
     --paper-2:#F4E9D2;
     --ink:#2B2118;
     --ink-soft:#6B5D4B;
-    --terra:#E8642F;
-    --terra-dk:#C44A1A;
+    --terra:#7C3AED;
+    --terra-dk:#5B21B6;
     --teal:#127C71;
     --teal-dk:#0C5C54;
     --sun:#F4B92E;
     --rose:#E14B5A;
-    --iris:#7C5CBF;
-    --iris-dk:#5D3FA0;
+    --iris:#2563EB;
+    --iris-dk:#1E4FD0;
     --line:#E0D2B6;
     --card:#FFFCF5;
     --shadow:0 2px 0 var(--line), 0 14px 30px -16px rgba(43,33,24,.4);
@@ -94,7 +94,7 @@
     font-family:"Fraunces",serif;font-weight:900;font-size:1.5rem;letter-spacing:-.02em;
     display:flex;align-items:center;gap:8px;color:var(--ink);
   }
-  .logo .dot{width:14px;height:14px;border-radius:50%;background:var(--terra);box-shadow:0 0 0 4px rgba(232,100,47,.18);}
+  .logo .dot{width:14px;height:14px;border-radius:50%;background:var(--terra);box-shadow:0 0 0 4px rgba(124,58,237,.18);}
   .stats{margin-left:auto;display:flex;gap:8px;}
   .stat-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;}
   .stat-label{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);opacity:.7;}
@@ -1487,7 +1487,7 @@ function endGame(){
 
 /* ============ CONFETTI ============ */
 function burst(){
-  const colors=["#E8642F","#127C71","#F4B92E","#E14B5A","#3FB6A2"];
+  const colors=["#7C3AED","#127C71","#F4B92E","#E14B5A","#2563EB"];
   for(let i=0;i<16;i++){
     const c=document.createElement("div"); c.className="confetti";
     c.style.left=(50+(Math.random()*40-20))+"%";
