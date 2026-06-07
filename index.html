@@ -759,7 +759,20 @@
   </div>
 </div><!-- /wrap -->
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
+/* ============ FIREBASE ============ */
+firebase.initializeApp({
+  apiKey: "AIzaSyBi7spMxgj4uJGGvxI_bvo9higL-MTMsKY",
+  authDomain: "conjuga-9eef6.firebaseapp.com",
+  projectId: "conjuga-9eef6",
+  storageBucket: "conjuga-9eef6.firebasestorage.app",
+  messagingSenderId: "179992764464",
+  appId: "1:179992764464:web:d5ee7619cf21615b508df5"
+});
+const db = firebase.firestore();
+
 /* ============ DATA (do caderno de espanhol) ============ */
 const PRON = [
   {k:"yo",  label:"yo"},
@@ -947,12 +960,20 @@ document.getElementById("nameField").addEventListener("input", function(){
 
 /* ============ SCOREBOARD ============ */
 const SCORES_KEY = "conjuga_scores";
-function getScores(){ return JSON.parse(localStorage.getItem(SCORES_KEY)||"[]"); }
+function getLocalScores(){ return JSON.parse(localStorage.getItem(SCORES_KEY)||"[]"); }
+
 function saveScore(entry){
-  const all = getScores();
+  // salva localmente
+  const all = getLocalScores();
   all.push(entry);
   localStorage.setItem(SCORES_KEY, JSON.stringify(all.slice(-200)));
+  // salva no Firestore (fire-and-forget)
+  db.collection("scores").add({
+    ...entry,
+    ts: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(e=>console.warn("Firestore:", e));
 }
+
 function bestPerName(scores){
   const map = {};
   scores.forEach(s=>{
@@ -962,12 +983,10 @@ function bestPerName(scores){
   return Object.values(map).sort((a,b)=>b.pct-a.pct||b.xp-a.xp);
 }
 
-function renderScoreboard(){
-  const rows = bestPerName(getScores());
-  const el = $("#sbList");
-  if(!rows.length){ el.innerHTML='<div class="sb-empty">Nenhuma rodada concluída ainda.<br>Jogue uma partida para aparecer aqui!</div>'; return; }
+function buildScoreHTML(rows){
+  if(!rows.length) return '<div class="sb-empty">Nenhuma rodada concluída ainda.<br>Jogue uma partida para aparecer aqui!</div>';
   const medals = ["🥇","🥈","🥉"];
-  el.innerHTML = rows.slice(0,20).map((r,i)=>{
+  return rows.slice(0,20).map((r,i)=>{
     const rankClass = i===0?"gold":i===1?"silver":i===2?"bronze":"";
     const rankText = medals[i]||(i+1)+"º";
     const tenseLabel = {pres:"Presente",indef:"Indefinido",ger:"Gerundio",mix:"Misto"}[r.tense]||"";
@@ -980,6 +999,19 @@ function renderScoreboard(){
       <div class="sb-pct">${r.pct}%</div>
     </div>`;
   }).join("");
+}
+
+async function renderScoreboard(){
+  const el = $("#sbList");
+  el.innerHTML = '<div class="sb-empty">Carregando placar…</div>';
+  try {
+    const snap = await db.collection("scores").get();
+    const scores = snap.docs.map(d=>d.data());
+    el.innerHTML = buildScoreHTML(bestPerName(scores));
+  } catch(e){
+    // fallback para localStorage se offline
+    el.innerHTML = buildScoreHTML(bestPerName(getLocalScores()));
+  }
 }
 
 let sbFrom = "start";
