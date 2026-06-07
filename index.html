@@ -126,6 +126,10 @@
   .prompt-label{font-size:.85rem;font-weight:700;color:var(--ink-soft);margin-bottom:6px;}
   .verb{font-family:"Fraunces",serif;font-weight:900;font-size:clamp(2.1rem,9vw,2.9rem);line-height:1.02;letter-spacing:-.03em;}
   .verb small{display:block;font-family:"Plus Jakarta Sans";font-weight:600;font-size:.95rem;color:var(--ink-soft);letter-spacing:0;margin-top:6px;}
+  .tr-lbl{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;opacity:.55;margin-right:4px;}
+  .name-field{width:100%;font-family:"Plus Jakarta Sans";font-weight:700;font-size:1rem;text-align:center;padding:13px 14px;border-radius:14px;border:2.5px solid var(--line);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;}
+  .name-field::placeholder{color:#bcae93;font-weight:600;}
+  .name-field:focus{border-color:var(--terra);box-shadow:0 0 0 4px rgba(232,100,47,.15);}
   .pron{
     display:inline-block;margin-top:16px;font-weight:800;font-size:1.15rem;color:#fff;
     background:linear-gradient(180deg,var(--terra),var(--terra-dk));padding:8px 16px;border-radius:14px;
@@ -343,8 +347,13 @@
   <div class="content">
   <!-- START -->
   <section id="start" class="screen">
-    <h1>¡Vamos a conjugar!</h1>
+    <h1 id="startTitle">¡Vamos a conjugar!</h1>
     <p class="sub">Treine <b>presente</b>, <b>pretérito indefinido</b> e <b>gerundio</b> com os verbos do seu caderno.</p>
+
+    <div class="opt-group">
+      <h3>Seu nome</h3>
+      <input class="name-field" id="nameField" type="text" autocomplete="given-name" autocapitalize="words" placeholder="Como você se chama?">
+    </div>
 
     <div class="opt-group">
       <h3>Tempo verbal</h3>
@@ -880,6 +889,26 @@ const PRES = [
 const cfg = {tense:"indef", mode:"type", len:10};
 let deck=[], idx=0, hearts=5, streak=0, bestStreak=0, xp=0, correct=0, answered=false;
 let missed=[];
+let playerName = localStorage.getItem("conjuga_name") || "";
+
+// Preenche o campo de nome salvo e atualiza saudação
+(function initName(){
+  const f = document.getElementById("nameField");
+  if(f) f.value = playerName;
+  updateGreeting();
+})();
+
+function updateGreeting(){
+  const t = document.getElementById("startTitle");
+  if(!t) return;
+  t.textContent = playerName ? "¡Hola, " + playerName + "!" : "¡Vamos a conjugar!";
+}
+
+document.getElementById("nameField").addEventListener("input", function(){
+  playerName = this.value.trim();
+  localStorage.setItem("conjuga_name", playerName);
+  updateGreeting();
+});
 
 /* ============ HELPERS ============ */
 const $=s=>document.querySelector(s);
@@ -1010,7 +1039,7 @@ function renderCard(){
   $("#rule").textContent=it.rule;
 
   // verb + translation
-  $("#verb").innerHTML = it.verb + '<small>'+it.tr+'</small>';
+  $("#verb").innerHTML = it.verb + '<small><span class="tr-lbl">tradução</span>'+it.tr+'</small>';
   $("#trad");
 
   // pronoun / prompt label
@@ -1204,21 +1233,22 @@ function endGame(){
   $("#sStreak").textContent=bestStreak;
   $("#sXp").textContent=xp;
   const out=$("#end");
+  const nome = playerName || "você";
   if(hearts<=0){
     $("#endEmoji").textContent="💔";
     $("#endTitle").textContent="¡Sin corazones!";
-    $("#endSub").textContent="Sem problema — descanse e tente de novo.";
+    $("#endSub").textContent="Sem problema, "+nome+" — descanse e tente de novo.";
   } else if(acc>=90){
     $("#endEmoji").textContent="🏆";
-    $("#endTitle").textContent="¡Excelente, Thiago!";
+    $("#endTitle").textContent="¡Excelente, "+nome+"!";
     $("#endSub").textContent="Dominando presente, pasado y gerundio.";
   } else if(acc>=60){
     $("#endEmoji").textContent="🎉";
-    $("#endTitle").textContent="¡Buena ronda!";
+    $("#endTitle").textContent="¡Buena ronda, "+nome+"!";
     $("#endSub").textContent="Vai melhorando a cada rodada.";
   } else {
     $("#endEmoji").textContent="💪";
-    $("#endTitle").textContent="¡A seguir practicando!";
+    $("#endTitle").textContent="¡A practicar, "+nome+"!";
     $("#endSub").textContent="Revise os verbos abaixo e tente outra vez.";
   }
   // missed list (unique by verb+ans)
