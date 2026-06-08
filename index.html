@@ -73,12 +73,12 @@
     .topbar{padding-top:18px;}
   }
   /* layout regions */
-  .topbar{flex:none;position:relative;z-index:2;padding:max(14px,env(safe-area-inset-top)) 16px 10px;}
-  .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;z-index:1;padding:4px 16px 16px;display:flex;flex-direction:column;}
+  .topbar{flex:none;position:relative;z-index:2;padding:max(12px,env(safe-area-inset-top)) 16px 8px;}
+  .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;z-index:1;padding:4px 16px max(16px,env(safe-area-inset-bottom));display:flex;flex-direction:column;}
   .content::-webkit-scrollbar{width:0;}
 
   /* ---------- Top bar ---------- */
-  header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:8px;min-height:38px;}
   .quit{flex:none;width:38px;height:38px;border-radius:11px;border:2px solid var(--line);background:var(--card);box-shadow:0 2px 0 var(--line);cursor:pointer;display:grid;place-items:center;color:var(--ink-soft);}
   .quit svg{width:18px;height:18px;}
   .quit:active{transform:translateY(2px);box-shadow:none;}
@@ -98,27 +98,30 @@
     display:flex;align-items:center;gap:8px;color:var(--ink);
   }
   .logo .dot{width:14px;height:14px;border-radius:50%;background:var(--terra);box-shadow:0 0 0 4px rgba(124,58,237,.18);}
-  .stats{margin-left:auto;display:flex;gap:6px;}
-  .stat-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;}
-  .stat-label{font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);opacity:.7;}
+  /* Stats bar — centrado no jogo, dentro da stage */
+  .stats{
+    display:flex;gap:10px;justify-content:center;align-items:flex-end;
+    width:100%;margin-bottom:10px;
+  }
+  .stat-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;}
+  .stat-label{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);opacity:.8;}
   .pill{
-    display:flex;align-items:center;gap:4px;font-weight:800;font-size:.85rem;
-    padding:5px 9px;border-radius:999px;background:var(--card);border:2px solid var(--line);
+    display:flex;align-items:center;gap:5px;font-weight:800;font-size:.95rem;
+    padding:6px 12px;border-radius:999px;background:var(--card);border:2px solid var(--line);
     box-shadow:0 2px 0 var(--line);
   }
-  .pill svg{width:15px;height:15px;display:block;}
+  .pill svg{width:16px;height:16px;display:block;}
   .pill.hearts{color:var(--rose);}
   .pill.streak{color:var(--sun);}
   .pill.xp{color:var(--teal);}
-  .pill.hints{color:var(--amber-dk);cursor:pointer;border:none;font-family:inherit;font-weight:800;}
+  .pill.hints{color:var(--amber-dk);cursor:pointer;font-family:inherit;font-weight:800;border:2px solid var(--line);background:var(--card);box-shadow:0 2px 0 var(--line);}
   .pill.hints:active{transform:translateY(2px);box-shadow:none;}
   .pill.hints.used{opacity:.4;cursor:default;pointer-events:none;}
   #hintWrap{position:relative;}
   #hintWrap::after{
-    content:"Quantidade de dicas restantes";position:absolute;top:calc(100% + 6px);right:0;
+    content:"Quantidade de dicas restantes";position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);
     background:var(--ink);color:#fff;font-size:.68rem;font-weight:700;padding:5px 9px;
     border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;
-    transform:translateX(20%);
   }
   #hintWrap:hover::after{opacity:1;}
 
@@ -391,28 +394,9 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar">
+  <div class="topbar hidden">
   <header>
     <button class="quit hidden" id="quitBtn" aria-label="Salir de la práctica"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    <div class="logo"><span class="dot"></span>Conjuga</div>
-    <div class="stats hidden" id="statsBar">
-      <div class="stat-wrap">
-        <div class="pill hearts"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.2C.3 8.4 2 5 5.3 5c2 0 3.4 1.1 4.2 2.4C10.3 6.1 11.7 5 13.7 5 17 5 18.7 8.4 17 11.8 19.5 16.4 12 21 12 21z"/></svg><span id="hearts">5</span></div>
-        <span class="stat-label">vidas</span>
-      </div>
-      <div class="stat-wrap">
-        <div class="pill streak"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2s1 4-2 7c-2.5 2.5-3 4-3 6a6 6 0 0012 0c0-3-2-5-3-7 .5 2-1 3-2 3 .5-3-1-6-2-7z"/></svg><span id="streak">0</span></div>
-        <span class="stat-label">streak</span>
-      </div>
-      <div class="stat-wrap">
-        <div class="pill xp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.3L21 9l-4.8 4.3L17.6 20 12 16.5 6.4 20l1.4-6.7L3 9l6.4-.7z"/></svg><span id="xp">0</span></div>
-        <span class="stat-label">XP</span>
-      </div>
-      <div class="stat-wrap" id="hintWrap">
-        <button class="pill hints" id="hintBtn">💡<span id="hintsLeft">3</span></button>
-        <span class="stat-label">dicas</span>
-      </div>
-    </div>
   </header>
 
   <div class="progress"><i id="bar"></i></div>
@@ -423,8 +407,6 @@
   <section id="start" class="screen">
     <img src="icon.png" alt="Conjuga" style="width:52px;height:52px;border-radius:12px;display:block;margin:0 auto 8px;box-shadow:0 4px 16px rgba(43,33,24,.18);">
     <h1 id="startTitle">¡Vamos a conjugar!</h1>
-    <p class="sub">Treine <b>presente</b>, <b>pretérito indefinido</b> e <b>gerundio</b> com os verbos do seu caderno.</p>
-
     <div class="opt-group">
       <h3>Seu nome</h3>
       <div style="position:relative;">
@@ -469,8 +451,35 @@
 
   <!-- GAME -->
   <section id="game" class="stage hidden">
-    <div class="meta">
-      <span class="tag" id="tag">Indefinido</span>
+    <div class="stats hidden" id="statsBar">
+      <div class="stat-wrap">
+        <div class="pill hearts">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5 2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          <span id="hearts">5</span>
+        </div>
+        <span class="stat-label">vidas</span>
+      </div>
+      <div class="stat-wrap">
+        <div class="pill streak">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 0.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5 0.67z"/></svg>
+          <span id="streak">0</span>
+        </div>
+        <span class="stat-label">streak</span>
+      </div>
+      <div class="stat-wrap">
+        <div class="pill xp">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+          <span id="xp">0</span>
+        </div>
+        <span class="stat-label">XP</span>
+      </div>
+      <div class="stat-wrap" id="hintWrap">
+        <button class="pill hints" id="hintBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span id="hintsLeft">3</span>
+        </button>
+        <span class="stat-label">dicas</span>
+      </div>
     </div>
 
     <div class="card" id="card">
@@ -795,7 +804,6 @@
     <button class="btn ghost" id="sbClear" style="margin-top:8px;font-size:.85rem;">🗑 Apagar histórico</button>
   </section>
 
-  <p class="footer-note">Hecho con tus verbos · presente · indefinido · gerundio</p>
   </div><!-- /content -->
 
   <!-- Feedback -->
@@ -1616,6 +1624,8 @@ function goToMenu(){
   $("#feedback").className="feedback";
   $("#quitSheet").classList.remove("show");
   $("#quitBtn").classList.add("hidden");
+  $("#statsBar").classList.add("hidden");
+  document.querySelector(".topbar").classList.add("hidden");
   ["end","game","theory","scoreboard"].forEach(id=>$("#"+id).classList.add("hidden"));
   $("#start").classList.remove("hidden");
   $(".content").scrollTop=0;
@@ -1711,6 +1721,7 @@ function startGame(){
   $("#end").classList.add("hidden");
   $("#theory").classList.add("hidden");
   $("#game").classList.remove("hidden");
+  document.querySelector(".topbar").classList.remove("hidden");
   $("#quitBtn").classList.remove("hidden");
   renderCard();
 }
@@ -1720,12 +1731,6 @@ function renderCard(){
   answered=false;
   const it=deck[idx];
   $("#bar").style.width=((idx)/deck.length*100)+"%";
-
-  // tag + rule
-  const tagEl=$("#tag");
-  if(it.kind==="pres"){tagEl.textContent="Presente";tagEl.className="tag pres";}
-  else if(it.kind==="indef"){tagEl.textContent="Pretérito indefinido";tagEl.className="tag indef";}
-  else {tagEl.textContent="Gerundio";tagEl.className="tag ger";}
 
   // verb + translation
   $("#verb").innerHTML = it.verb + '<small><span class="tr-lbl">tradução</span>'+it.tr+'</small>';
@@ -1935,6 +1940,7 @@ function endGame(){
   $("#game").classList.add("hidden");
   $("#quitBtn").classList.add("hidden");
   $("#statsBar").classList.add("hidden");
+  document.querySelector(".topbar").classList.add("hidden");
   $("#bar").style.width="100%";
   const total=idx; // attempted
   const acc = deck.length? Math.round(correct/Math.min(idx,deck.length)*100):0;
