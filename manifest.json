@@ -1,0 +1,17 @@
+{
+  "name": "Conjuga",
+  "short_name": "Conjuga",
+  "description": "Treino de conjugação em espanhol",
+  "start_url": "/conjuga/",
+  "scope": "/conjuga/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF4E6",
+  "theme_color": "#7C3AED",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "favicon.png",          "sizes": "32x32",     "type": "image/png" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180",   "type": "image/png" },
+    { "src": "icon.png",             "sizes": "1254x1254", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
