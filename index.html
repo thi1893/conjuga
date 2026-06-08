@@ -1416,10 +1416,19 @@ function showFB(ok,title,detail,snippet){
   const cont=$("#contBtn");
   cont.className = "btn"+(ok?"":" terra");
   cont.onclick=nextCard;
+  // no modo múltipla escolha, sobe o conteúdo para as alternativas ficarem visíveis
+  if(cfg.mode==="choice"){
+    setTimeout(()=>{
+      const content=$(".content");
+      content.style.paddingBottom = fb.offsetHeight+16+"px";
+      $("#card").scrollIntoView({behavior:"smooth",block:"start"});
+    },60);
+  }
 }
 
 function nextCard(){
   $("#feedback").className="feedback";
+  $(".content").style.paddingBottom="";
   idx++;
   if(hearts<=0 || idx>=deck.length){ endGame(); return; }
   renderCard();
