@@ -25,6 +25,8 @@
     --teal:#127C71;
     --teal-dk:#0C5C54;
     --sun:#F4B92E;
+    --amber:#D97706;
+    --amber-dk:#B45309;
     --rose:#E14B5A;
     --iris:#2563EB;
     --iris-dk:#1E4FD0;
@@ -82,14 +84,14 @@
   .quit:active{transform:translateY(2px);box-shadow:none;}
   .quit-sheet{
     position:absolute;left:0;right:0;bottom:0;transform:translateY(120%);transition:transform .35s cubic-bezier(.2,.9,.2,1);
-    z-index:35;padding:20px 18px max(18px,env(safe-area-inset-bottom));
-    border-top-left-radius:24px;border-top-right-radius:24px;
+    z-index:35;padding:12px 16px max(14px,env(safe-area-inset-bottom));
+    border-top-left-radius:18px;border-top-right-radius:18px;
     background:var(--card);border-top:3px solid var(--terra);
   }
   .quit-sheet.show{transform:translateY(0);}
-  .qs-inner{margin-bottom:14px;}
-  .qs-inner b{display:block;font-family:"Fraunces",serif;font-size:1.2rem;color:var(--ink);}
-  .qs-inner span{font-size:.92rem;color:var(--ink-soft);font-weight:600;}
+  .qs-inner{margin-bottom:8px;}
+  .qs-inner b{display:block;font-family:"Fraunces",serif;font-size:1rem;color:var(--ink);}
+  .qs-inner span{font-size:.82rem;color:var(--ink-soft);font-weight:600;}
   .quit-sheet .row2{margin-top:0;}
   .logo{
     font-family:"Fraunces",serif;font-weight:900;font-size:1.5rem;letter-spacing:-.02em;
@@ -181,8 +183,8 @@
 
   /* ---------- Buttons ---------- */
   .btn{
-    width:100%;font-family:"Plus Jakarta Sans";font-weight:800;font-size:1.05rem;letter-spacing:.01em;
-    padding:16px;border:none;border-radius:16px;cursor:pointer;color:#fff;
+    width:100%;font-family:"Plus Jakarta Sans";font-weight:800;font-size:.97rem;letter-spacing:.01em;
+    padding:13px 16px;border:none;border-radius:14px;cursor:pointer;color:#fff;
     background:linear-gradient(180deg,var(--teal),var(--teal-dk));box-shadow:0 4px 0 var(--teal-dk);
     transition:transform .1s,box-shadow .1s,filter .15s;text-transform:uppercase;
   }
@@ -226,8 +228,10 @@
     flex:1;min-width:fit-content;font-weight:700;font-size:.92rem;padding:11px 12px;border-radius:13px;
     border:2.5px solid var(--line);background:var(--paper);cursor:pointer;text-align:center;transition:.15s;color:var(--ink);
   }
-  .opt[aria-pressed="true"]{border-color:var(--terra);background:rgba(232,100,47,.12);color:var(--terra-dk);}
+  .opt[aria-pressed="true"]{border-color:var(--terra);background:rgba(124,58,237,.12);color:var(--terra-dk);}
   .opt[aria-pressed="true"].teal{border-color:var(--teal);background:rgba(18,124,113,.12);color:var(--teal-dk);}
+  .opt[aria-pressed="true"].blue{border-color:var(--iris);background:rgba(37,99,235,.12);color:var(--iris-dk);}
+  .opt[aria-pressed="true"].amber{border-color:var(--amber);background:rgba(217,119,6,.12);color:var(--amber-dk);}
   .src{margin-top:18px;font-size:.78rem;color:var(--ink-soft);font-weight:600;line-height:1.5;}
   .src b{color:var(--ink);}
 
@@ -239,6 +243,24 @@
   .miss-list{text-align:left;margin-top:8px;}
   .miss-list .mi{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;border-radius:12px;background:var(--paper);border:1.5px solid var(--line);margin-bottom:7px;font-weight:600;font-size:.95rem;}
   .miss-list .mi b{font-family:"Fraunces",serif;color:var(--teal-dk);}
+
+  /* ---------- Hint ---------- */
+  .hint-btn{
+    font-size:.78rem;font-weight:800;padding:5px 11px;border-radius:999px;border:2px solid var(--line);
+    background:var(--paper);color:var(--ink-soft);cursor:pointer;display:flex;align-items:center;gap:5px;
+    transition:.15s;white-space:nowrap;
+  }
+  .hint-btn:active{transform:scale(.96);}
+  .hint-btn.used{opacity:.45;cursor:default;}
+  .hint-reveal{
+    margin-top:14px;padding:11px 13px;border-radius:13px;background:#FFFBF0;border:2px solid #F3DFA8;
+    font-size:.88rem;font-weight:600;line-height:1.4;color:var(--ink);
+    animation:fadeIn .2s ease;
+  }
+  .hint-reveal.hidden{display:none;}
+  .hint-reveal .snip-rule{font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);margin-bottom:4px;}
+  .hint-reveal .snip-ger,.hint-reveal .snip-indef,.hint-reveal .snip-pres{font-size:.88rem;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 
   /* ---------- Theory screen ---------- */
   .theory{text-align:left;}
@@ -401,9 +423,9 @@
       <h3>Tempo verbal</h3>
       <div class="opts" id="tenseOpts">
         <button class="opt" data-tense="pres" aria-pressed="false">Presente</button>
-        <button class="opt" data-tense="indef" aria-pressed="true">Pretérito indefinido</button>
+        <button class="opt blue" data-tense="indef" aria-pressed="true">Pretérito indefinido</button>
         <button class="opt teal" data-tense="ger" aria-pressed="false">Gerundio</button>
-        <button class="opt" data-tense="mix" aria-pressed="false">Misto</button>
+        <button class="opt amber" data-tense="mix" aria-pressed="false">Misto</button>
       </div>
     </div>
 
@@ -426,23 +448,24 @@
     </div>
 
     <button class="btn terra" id="startBtn">Empezar</button>
-    <button class="btn ghost" id="theoryBtn" style="margin-top:10px">📖 Estudiar la teoría</button>
-    <button class="btn ghost" id="scoreBoardBtn" style="margin-top:10px">🏆 Ver placar</button>
-    <button class="btn ghost" id="installBtn" style="margin-top:10px">📲 Adicionar à tela inicial</button>
-    <p class="src">Fonte: planilha <b>ESPAÑOL THIAGO</b> (Google Drive) — abas de gerundio e pasado simple. Verbos regulares (AR/ER/IR), irregulares (tener, ir, decir, hacer, poner…) e casos especiais (doble vocal → -yendo, e→i, o→u).</p>
+    <button class="btn ghost" id="theoryBtn" style="margin-top:8px">📖 Estudiar la teoría</button>
+    <button class="btn ghost" id="scoreBoardBtn" style="margin-top:8px">🏆 Ver placar</button>
+    <button class="btn ghost" id="installBtn" style="margin-top:8px">📲 Adicionar à tela inicial</button>
   </section>
 
   <!-- GAME -->
   <section id="game" class="stage hidden">
     <div class="meta">
       <span class="tag" id="tag">Indefinido</span>
-      <span class="rule" id="rule"></span>
+      <button class="hint-btn" id="hintBtn">💡 <span id="hintsLeft">3</span></button>
     </div>
 
     <div class="card" id="card">
       <div class="prompt-label" id="plabel">Conjuga el verbo</div>
       <div class="verb" id="verb">cantar<small id="trad">cantar</small></div>
       <div id="pronWrap"><span class="pron" id="pron">yo</span></div>
+
+      <div class="hint-reveal hidden" id="hintReveal"></div>
 
       <!-- type -->
       <div class="answer" id="typeArea">
@@ -980,7 +1003,7 @@ const PRES = [
 
 /* ============ STATE ============ */
 const cfg = {tense:"indef", mode:"type", len:10};
-let deck=[], idx=0, hearts=5, streak=0, bestStreak=0, xp=0, correct=0, answered=false;
+let deck=[], idx=0, hearts=5, streak=0, bestStreak=0, xp=0, correct=0, answered=false, hints=3;
 let missed=[];
 let playerName = localStorage.getItem("conjuga_name") || "";
 
@@ -1040,9 +1063,11 @@ function bestPerName(scores){
   const map = {};
   scores.forEach(s=>{
     const n = s.name||"Anônimo";
-    if(!map[n] || s.pct > map[n].pct || (s.pct===map[n].pct && s.xp>map[n].xp)) map[n]=s;
+    const bs = s.bestStreak||0;
+    const ms = map[n]?.bestStreak||0;
+    if(!map[n] || bs > ms || (bs===ms && s.pct>map[n].pct)) map[n]=s;
   });
-  return Object.values(map).sort((a,b)=>b.pct-a.pct||b.xp-a.xp);
+  return Object.values(map).sort((a,b)=>(b.bestStreak||0)-(a.bestStreak||0)||(b.pct-a.pct));
 }
 
 function buildScoreHTML(rows){
@@ -1052,11 +1077,12 @@ function buildScoreHTML(rows){
     const rankClass = i===0?"gold":i===1?"silver":i===2?"bronze":"";
     const rankText = medals[i]||(i+1)+"º";
     const tenseLabel = {pres:"Presente",indef:"Indefinido",ger:"Gerundio",mix:"Misto"}[r.tense]||"";
+    const streakTxt = r.bestStreak ? ` · 🔥${r.bestStreak}` : "";
     return `<div class="sb-row">
       <div class="sb-rank ${rankClass}">${rankText}</div>
       <div class="sb-info">
         <div class="sb-name">${r.name||"Anônimo"}</div>
-        <div class="sb-meta">${r.date} · ${r.correct}/${r.total} · ${tenseLabel}</div>
+        <div class="sb-meta">${r.date} · ${r.correct}/${r.total} · ${tenseLabel}${streakTxt}</div>
       </div>
       <div class="sb-pct">${r.pct}%</div>
     </div>`;
@@ -1181,6 +1207,16 @@ $("#quitBtn").addEventListener("click",()=>$("#quitSheet").classList.add("show")
 $("#qsStay").addEventListener("click",()=>$("#quitSheet").classList.remove("show"));
 $("#qsLeave").addEventListener("click",goToMenu);
 
+$("#hintBtn").addEventListener("click",()=>{
+  if(hints<=0 || answered) return;
+  hints--;
+  $("#hintsLeft").textContent=hints;
+  const it=deck[idx];
+  $("#hintReveal").innerHTML=getTheorySnippet(it);
+  $("#hintReveal").classList.remove("hidden");
+  if(hints<=0) { $("#hintBtn").classList.add("used"); $("#hintBtn").disabled=true; }
+});
+
 /* ----- Theory screen ----- */
 let theoryFrom="start";
 function openTheory(from, tab){
@@ -1242,8 +1278,9 @@ $("#thBack").addEventListener("click",closeTheory);
 document.querySelectorAll(".tab-btn").forEach(b=>b.addEventListener("click",()=>switchTheoryTab(b.dataset.tab)));
 
 function resetStats(){
-  hearts=5;streak=0;bestStreak=0;xp=0;correct=0;missed=[];idx=0;
+  hearts=5;streak=0;bestStreak=0;xp=0;correct=0;missed=[];idx=0;hints=3;
   $("#hearts").textContent=5;$("#streak").textContent=0;$("#xp").textContent=0;$("#bar").style.width="0%";
+  $("#hintsLeft").textContent=3;
 }
 
 function startGame(){
@@ -1275,20 +1312,27 @@ function renderCard(){
   $("#verb").innerHTML = it.verb + '<small><span class="tr-lbl">tradução</span>'+it.tr+'</small>';
   $("#trad");
 
+  // hint reset per card
+  const hintBtn=$("#hintBtn"), hintReveal=$("#hintReveal");
+  hintBtn.classList.remove("used");
+  hintBtn.disabled=false;
+  hintReveal.classList.add("hidden");
+  hintReveal.innerHTML="";
+
   // pronoun / prompt label
   const card=$("#card");
   card.classList.remove("ger-target","pres-target");
   if(it.kind==="pres"){
-    $("#plabel").textContent="Conjuga en presente";
+    $("#plabel").innerHTML='Conjuga en <span style="color:var(--iris);font-weight:900">presente</span>';
     $("#pronWrap").classList.remove("hidden");
     $("#pron").textContent=it.pron.label;
     card.classList.add("pres-target");
   } else if(it.kind==="indef"){
-    $("#plabel").textContent="Conjuga en pretérito indefinido";
+    $("#plabel").innerHTML='Conjuga en <span style="color:var(--iris);font-weight:900">pretérito indefinido</span>';
     $("#pronWrap").classList.remove("hidden");
     $("#pron").textContent=it.pron.label;
   } else {
-    $("#plabel").textContent="Escribe el gerundio";
+    $("#plabel").innerHTML='Escribe el <span style="color:var(--teal);font-weight:900">gerundio</span>';
     $("#pronWrap").classList.add("hidden");
     card.classList.add("ger-target");
   }
@@ -1489,7 +1533,8 @@ function endGame(){
       total: Math.min(idx, deck.length),
       date: new Date().toLocaleDateString("pt-BR"),
       tense: cfg.tense,
-      mode: cfg.mode
+      mode: cfg.mode,
+      bestStreak
     });
   }
 
