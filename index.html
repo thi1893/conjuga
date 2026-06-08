@@ -1306,7 +1306,6 @@ function renderCard(){
   if(it.kind==="pres"){tagEl.textContent="Presente";tagEl.className="tag pres";}
   else if(it.kind==="indef"){tagEl.textContent="Pretérito indefinido";tagEl.className="tag indef";}
   else {tagEl.textContent="Gerundio";tagEl.className="tag ger";}
-  $("#rule").textContent=it.rule;
 
   // verb + translation
   $("#verb").innerHTML = it.verb + '<small><span class="tr-lbl">tradução</span>'+it.tr+'</small>';
