@@ -51,7 +51,7 @@
   .wrap{
     position:relative;z-index:1;
     width:100%;max-width:430px;height:100dvh;
-    display:flex;flex-direction:column;overflow:hidden;
+    display:flex;flex-direction:column;overflow:clip;
     background:
       radial-gradient(120% 70% at 100% 0%, rgba(244,185,46,.20), transparent 55%),
       radial-gradient(120% 80% at 0% 100%, rgba(18,124,113,.13), transparent 50%),
@@ -98,18 +98,29 @@
     display:flex;align-items:center;gap:8px;color:var(--ink);
   }
   .logo .dot{width:14px;height:14px;border-radius:50%;background:var(--terra);box-shadow:0 0 0 4px rgba(124,58,237,.18);}
-  .stats{margin-left:auto;display:flex;gap:8px;}
+  .stats{margin-left:auto;display:flex;gap:6px;}
   .stat-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;}
-  .stat-label{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);opacity:.7;}
+  .stat-label{font-size:.58rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);opacity:.7;}
   .pill{
-    display:flex;align-items:center;gap:5px;font-weight:800;font-size:.95rem;
-    padding:7px 12px;border-radius:999px;background:var(--card);border:2px solid var(--line);
+    display:flex;align-items:center;gap:4px;font-weight:800;font-size:.85rem;
+    padding:5px 9px;border-radius:999px;background:var(--card);border:2px solid var(--line);
     box-shadow:0 2px 0 var(--line);
   }
-  .pill svg{width:18px;height:18px;display:block;}
+  .pill svg{width:15px;height:15px;display:block;}
   .pill.hearts{color:var(--rose);}
   .pill.streak{color:var(--sun);}
   .pill.xp{color:var(--teal);}
+  .pill.hints{color:var(--amber-dk);cursor:pointer;border:none;font-family:inherit;font-weight:800;}
+  .pill.hints:active{transform:translateY(2px);box-shadow:none;}
+  .pill.hints.used{opacity:.4;cursor:default;pointer-events:none;}
+  #hintWrap{position:relative;}
+  #hintWrap::after{
+    content:"Quantidade de dicas restantes";position:absolute;top:calc(100% + 6px);right:0;
+    background:var(--ink);color:#fff;font-size:.68rem;font-weight:700;padding:5px 9px;
+    border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s;
+    transform:translateX(20%);
+  }
+  #hintWrap:hover::after{opacity:1;}
 
   /* ---------- Progress ---------- */
   .progress{height:14px;border-radius:999px;background:var(--paper-2);border:2px solid var(--line);overflow:hidden;margin-bottom:18px;}
@@ -136,7 +147,7 @@
   .verb{font-family:"Fraunces",serif;font-weight:900;font-size:clamp(2.1rem,9vw,2.9rem);line-height:1.02;letter-spacing:-.03em;}
   .verb small{display:block;font-family:"Plus Jakarta Sans";font-weight:600;font-size:.95rem;color:var(--ink-soft);letter-spacing:0;margin-top:6px;}
   .tr-lbl{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;opacity:.55;margin-right:4px;}
-  .name-field{width:100%;font-family:"Plus Jakarta Sans";font-weight:700;font-size:1rem;text-align:center;padding:13px 14px;border-radius:14px;border:2.5px solid var(--line);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;}
+  .name-field{width:100%;font-family:"Plus Jakarta Sans";font-weight:700;font-size:.95rem;text-align:center;padding:10px 14px;border-radius:12px;border:2.5px solid var(--line);background:var(--paper);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s;}
   .name-field::placeholder{color:#bcae93;font-weight:600;}
   .name-field:focus{border-color:var(--terra);box-shadow:0 0 0 4px rgba(232,100,47,.15);}
   .pron{
@@ -192,7 +203,7 @@
   .btn:disabled{filter:grayscale(.5) opacity(.6);cursor:default;}
   .btn.ghost{background:var(--card);color:var(--ink-soft);box-shadow:0 3px 0 var(--line);border:2px solid var(--line);}
   .btn.terra{background:linear-gradient(180deg,var(--terra),var(--terra-dk));box-shadow:0 4px 0 var(--terra-dk);}
-  .controls{margin-top:18px;display:flex;flex-direction:column;gap:10px;}
+  .controls{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
   .row2{display:flex;gap:10px;}
   .row2 .btn{flex:1;}
 
@@ -218,14 +229,14 @@
   .feedback .btn{margin-top:14px;display:block;width:100%;}
 
   /* ---------- Start / End screens ---------- */
-  .screen{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px 24px;text-align:center;}
-  .screen h1{font-family:"Fraunces",serif;font-weight:900;font-size:2rem;letter-spacing:-.03em;line-height:1.05;margin-bottom:6px;}
-  .screen p.sub{color:var(--ink-soft);font-weight:600;margin-bottom:22px;}
-  .opt-group{text-align:left;margin-bottom:18px;}
-  .opt-group h3{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);margin-bottom:9px;}
+  .screen{background:var(--card);border:2px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;text-align:center;}
+  .screen h1{font-family:"Fraunces",serif;font-weight:900;font-size:1.65rem;letter-spacing:-.03em;line-height:1.05;margin-bottom:4px;}
+  .screen p.sub{color:var(--ink-soft);font-weight:600;margin-bottom:14px;font-size:.9rem;}
+  .opt-group{text-align:left;margin-bottom:12px;}
+  .opt-group h3{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);margin-bottom:7px;}
   .opts{display:flex;gap:8px;flex-wrap:wrap;}
   .opt{
-    flex:1;min-width:fit-content;font-weight:700;font-size:.92rem;padding:11px 12px;border-radius:13px;
+    flex:1;min-width:fit-content;font-weight:700;font-size:.88rem;padding:9px 10px;border-radius:11px;
     border:2.5px solid var(--line);background:var(--paper);cursor:pointer;text-align:center;transition:.15s;color:var(--ink);
   }
   .opt[aria-pressed="true"]{border-color:var(--terra);background:rgba(124,58,237,.12);color:var(--terra-dk);}
@@ -397,6 +408,10 @@
         <div class="pill xp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.3L21 9l-4.8 4.3L17.6 20 12 16.5 6.4 20l1.4-6.7L3 9l6.4-.7z"/></svg><span id="xp">0</span></div>
         <span class="stat-label">XP</span>
       </div>
+      <div class="stat-wrap" id="hintWrap">
+        <button class="pill hints" id="hintBtn">💡<span id="hintsLeft">3</span></button>
+        <span class="stat-label">dicas</span>
+      </div>
     </div>
   </header>
 
@@ -406,16 +421,15 @@
   <div class="content">
   <!-- START -->
   <section id="start" class="screen">
-    <img src="icon.png" alt="Conjuga" style="width:72px;height:72px;border-radius:16px;display:block;margin:0 auto 12px;box-shadow:0 4px 16px rgba(43,33,24,.18);">
+    <img src="icon.png" alt="Conjuga" style="width:52px;height:52px;border-radius:12px;display:block;margin:0 auto 8px;box-shadow:0 4px 16px rgba(43,33,24,.18);">
     <h1 id="startTitle">¡Vamos a conjugar!</h1>
     <p class="sub">Treine <b>presente</b>, <b>pretérito indefinido</b> e <b>gerundio</b> com os verbos do seu caderno.</p>
 
     <div class="opt-group">
       <h3>Seu nome</h3>
-      <input class="name-field" id="nameField" type="text" autocomplete="given-name" autocapitalize="words" placeholder="Como você se chama?">
-      <div class="row2" style="margin-top:8px;">
-        <button class="btn ghost" id="clearNameBtn">✕ Limpar</button>
-        <button class="btn terra" id="saveNameBtn">Salvar nome</button>
+      <div style="position:relative;">
+        <input class="name-field" id="nameField" type="text" autocomplete="given-name" autocapitalize="words" placeholder="Como você se chama?">
+        <button id="clearNameBtn" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--ink-soft);padding:4px;line-height:1;" aria-label="Limpar nome">✕</button>
       </div>
     </div>
 
@@ -448,16 +462,15 @@
     </div>
 
     <button class="btn terra" id="startBtn">Empezar</button>
-    <button class="btn ghost" id="theoryBtn" style="margin-top:8px">📖 Estudiar la teoría</button>
-    <button class="btn ghost" id="scoreBoardBtn" style="margin-top:8px">🏆 Ver placar</button>
-    <button class="btn ghost" id="installBtn" style="margin-top:8px">📲 Adicionar à tela inicial</button>
+    <button class="btn ghost" id="theoryBtn" style="margin-top:6px">📖 Estudiar la teoría</button>
+    <button class="btn ghost" id="scoreBoardBtn" style="margin-top:6px">🏆 Ver placar</button>
+    <button class="btn ghost" id="installBtn" style="margin-top:6px">📲 Adicionar à tela inicial</button>
   </section>
 
   <!-- GAME -->
   <section id="game" class="stage hidden">
     <div class="meta">
       <span class="tag" id="tag">Indefinido</span>
-      <button class="hint-btn" id="hintBtn">💡 <span id="hintsLeft">3</span></button>
     </div>
 
     <div class="card" id="card">
@@ -1024,16 +1037,15 @@ function updateGreeting(preview){
 document.getElementById("nameField").addEventListener("input", function(){
   updateGreeting(this.value.trim());
 });
-
-document.getElementById("saveNameBtn").addEventListener("click", function(){
-  const val = document.getElementById("nameField").value.trim();
+document.getElementById("nameField").addEventListener("blur", function(){
+  const val = this.value.trim();
   playerName = val;
-  localStorage.setItem("conjuga_name", playerName);
+  if(val) localStorage.setItem("conjuga_name", val);
+  else localStorage.removeItem("conjuga_name");
   updateGreeting();
-  const btn = this;
-  btn.textContent = "✓ Salvo!";
-  btn.disabled = true;
-  setTimeout(()=>{ btn.textContent = "Salvar nome"; btn.disabled = false; }, 1800);
+});
+document.getElementById("nameField").addEventListener("keydown", function(e){
+  if(e.key==="Enter"){ this.blur(); }
 });
 
 document.getElementById("clearNameBtn").addEventListener("click", function(){
@@ -1312,9 +1324,9 @@ function renderCard(){
   $("#trad");
 
   // hint reset per card
-  const hintBtn=$("#hintBtn"), hintReveal=$("#hintReveal");
-  hintBtn.classList.remove("used");
-  hintBtn.disabled=false;
+  const hintReveal=$("#hintReveal");
+  $("#hintBtn").classList.remove("used");
+  $("#hintBtn").disabled=false;
   hintReveal.classList.add("hidden");
   hintReveal.innerHTML="";
 
@@ -1354,7 +1366,7 @@ function renderType(it){
   $("#controls").innerHTML='<button class="btn" id="checkBtn">Comprobar</button>';
   $("#checkBtn").addEventListener("click",()=>checkType(it));
   f.onkeydown=e=>{ if(e.key==="Enter") checkType(it); };
-  setTimeout(()=>f.focus(),120);
+  setTimeout(()=>{ f.focus(); document.querySelector('.wrap').scrollTop=0; },120);
 }
 function checkType(it){
   if(answered) return;
